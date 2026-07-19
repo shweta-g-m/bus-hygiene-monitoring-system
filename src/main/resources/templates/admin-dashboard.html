@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard – Smart Bus Hygiene</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500&display=swap');
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--bg:#f0f6ff;--card:#fff;--border:#bbdefb;--text:#0c2d5e;--muted:#1976d2;--blue:#1565c0;--mid:#1e88e5;}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);}
+    .topnav{background:#fff;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:4px;padding:0 20px;height:52px;position:sticky;top:0;z-index:100;}
+    .topnav a{text-decoration:none;color:var(--muted);font-size:14px;font-weight:500;padding:6px 12px;transition:background 0.15s,color 0.15s;}
+    .topnav a:hover{background:var(--light,#e3f2fd);color:var(--blue);}
+    .topnav a.active{background:#bbdefb;color:var(--blue);font-weight:600;}
+    .topnav .spacer{flex:1;}
+    .topnav .logout{background:#fef2f2;color:#b91c1c;border:none;padding:6px 14px;font-size:13px;cursor:pointer;text-decoration:none;}
+    .welcome-name{font-size:13px;color:var(--muted);margin-right:8px;}
+
+    .page-header{background:linear-gradient(135deg,#1565c0,#1e88e5);padding:24px 24px 32px;}
+    .page-header h1{font-family:'Playfair Display',serif;font-size:22px;color:#fff;}
+    .page-header p{color:rgba(255,255,255,0.8);font-size:13px;margin-top:4px;}
+
+    .inner{max-width:1150px;margin:0 auto;padding:0 20px;}
+
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;padding:20px 0 0;}
+    .stat{background:var(--card);border:2px solid var(--border);padding:16px;box-shadow:0 2px 10px rgba(21,101,192,0.06);}
+    .stat .lbl{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.6px;}
+    .stat .val{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--blue);margin-top:4px;}
+    .stat .val.green{color:#16a34a;} .stat .val.red{color:#dc2626;} .stat .val.orange{color:#ca8a04;}
+
+    .section-title{font-family:'Playfair Display',serif;font-size:18px;margin:24px 0 12px;}
+
+    .chart-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:20px 0 0;}
+    @media(max-width:640px){.chart-row{grid-template-columns:1fr;}}
+    .chart-card{background:var(--card);border:2px solid var(--border);padding:20px;}
+    .chart-card h3{font-family:'Playfair Display',serif;font-size:15px;margin-bottom:16px;color:var(--blue);}
+    .chart-wrap{height:200px;position:relative;}
+
+    .filters{display:flex;gap:10px;flex-wrap:wrap;padding:20px 0 0;align-items:flex-end;}
+    .filter-group{display:flex;flex-direction:column;gap:5px;}
+    .filter-group label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;}
+    .filters select{border:2px solid var(--border);padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--card);color:var(--text);outline:none;min-width:160px;}
+    .filters select:focus{border-color:var(--blue);}
+    .filter-btn{background:linear-gradient(135deg,#1565c0,#1e88e5);color:#fff;border:none;padding:9px 20px;font-size:14px;font-weight:500;cursor:pointer;}
+    .reset-link{font-size:13px;color:var(--muted);text-decoration:none;align-self:center;}
+
+    .table-section{padding:20px 0 8px;}
+    .table-wrap{overflow-x:auto;border:2px solid var(--border);background:var(--card);box-shadow:0 2px 12px rgba(21,101,192,0.06);}
+    table{width:100%;border-collapse:collapse;font-size:14px;min-width:820px;}
+    thead th{background:#e3f2fd;padding:12px 14px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--border);}
+    tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s;}
+    tbody tr:last-child{border-bottom:none;}
+    tbody tr:hover{background:#f0f6ff;}
+    td{padding:11px 14px;vertical-align:middle;}
+
+    .badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;}
+    .badge-resolved,.badge-solved{background:#dcfce7;color:#166534;}
+    .badge-pending{background:#fef9c3;color:#854d0e;}
+    .cmp-id{font-family:monospace;font-size:12px;background:#e3f2fd;color:#1565c0;padding:2px 8px;font-weight:700;}
+
+    .alert-type-pill{font-size:11px;font-weight:600;padding:2px 9px;display:inline-block;}
+    .type-VOMIT{background:#fee2e2;color:#991b1b;}
+    .type-LOW_RATING{background:#fef3c7;color:#92400e;}
+    .type-HYGIENE_COMPLAINT{background:#dbeafe;color:#1d4ed8;}
+    .type-GENERAL_FEEDBACK{background:#f3f4f6;color:#374151;}
+
+    .stars-cell{letter-spacing:-1px;font-size:14px;}
+    .r1,.r2{color:#dc2626;} .r3{color:#ca8a04;} .r4,.r5{color:#16a34a;}
+    .tags{display:flex;flex-wrap:wrap;gap:4px;}
+    .tag{background:#e3f2fd;color:#1565c0;font-size:11px;padding:2px 8px;}
+    .tag-yes{background:#fee2e2;color:#991b1b;}
+    .complaint-cell{max-width:160px;font-size:13px;color:var(--muted);line-height:1.4;}
+
+    .action-btn{border:none;padding:5px 12px;font-size:12px;font-weight:500;cursor:pointer;transition:opacity 0.15s;}
+    .btn-resolve{background:#dcfce7;color:#166534;}
+    .btn-reopen{background:#fef9c3;color:#854d0e;}
+    .btn-delete{background:#fee2e2;color:#991b1b;margin-left:4px;}
+    .btn-solve{background:#dbeafe;color:#1d4ed8;}
+    .action-btn:hover{opacity:0.78;}
+    .no-data{text-align:center;padding:48px;color:var(--muted);}
+
+    footer{text-align:center;padding:28px 20px;font-size:13px;color:var(--muted);border-top:2px solid var(--border);margin-top:40px;}
+  </style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="/index.html">🏠 Home</a>
+  <a href="/about.html">About</a>
+  <a href="/contact.html">Contact</a>
+  <a href="/select-bus.html">Feedback</a>
+  <a href="/admin/dashboard" class="active">🛠️ Dashboard</a>
+  <div class="spacer"></div>
+  <span class="welcome-name">👤 <span th:text="${adminName}">Admin</span></span>
+  <a href="/admin/logout" class="logout">Logout</a>
+</nav>
+
+<div class="page-header">
+  <h1>🛠️ Admin Dashboard</h1>
+  <p>Smart Bus Hygiene Monitoring System</p>
+</div>
+
+<div class="inner">
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat"><div class="lbl">Total Complaints</div><div class="val" th:text="${totalFeedback}">0</div></div>
+    <div class="stat"><div class="lbl">Active Alerts</div><div class="val red" th:text="${pendingAlerts}">0</div></div>
+    <div class="stat"><div class="lbl">Solved Cases</div><div class="val green" th:text="${solvedAlerts}">0</div></div>
+    <div class="stat"><div class="lbl">Clean Buses</div><div class="val green" th:text="${cleanBuses}">0</div></div>
+    <div class="stat"><div class="lbl">Unclean Buses</div><div class="val red" th:text="${uncleanBuses}">0</div></div>
+    <div class="stat"><div class="lbl">Avg Rating</div><div class="val" th:text="${avgRating} + ' ⭐'">0 ⭐</div></div>
+    <div class="stat"><div class="lbl">Pending</div><div class="val orange" th:text="${pending}">0</div></div>
+    <div class="stat"><div class="lbl">Resolved</div><div class="val green" th:text="${resolved}">0</div></div>
+  </div>
+
+  <!-- Charts -->
+  <div class="chart-row">
+    <div class="chart-card">
+      <h3>📊 Solved vs Active Cases</h3>
+      <div class="chart-wrap"><canvas id="caseChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>🚌 Bus Hygiene Status</h3>
+      <div class="chart-wrap"><canvas id="busChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Active Alerts — Pending only -->
+  <h2 class="section-title">🚨 Active Alerts
+    <small style="font-size:13px;color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:400;">
+      — Pending only. Solved alerts are removed from this view.
+    </small>
+  </h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Complaint ID</th><th>Bus</th><th>Type</th><th>Message</th><th>Status</th><th>Date &amp; Time</th><th>Action</th></tr>
+      </thead>
+      <tbody>
+        <tr th:if="${#lists.isEmpty(recentAlerts)}">
+          <td colspan="7" class="no-data">✅ No active alerts. All complaints are resolved.</td>
+        </tr>
+        <tr th:each="a : ${recentAlerts}">
+          <td><span class="cmp-id" th:text="${a.complaintId}">—</span></td>
+          <td><strong th:text="${a.busId}"></strong></td>
+          <td><span th:class="'alert-type-pill type-' + ${a.alertType}"
+                    th:text="${a.alertType.replace('_',' ')}"></span></td>
+          <td class="complaint-cell" th:text="${a.message}"></td>
+          <td><span class="badge badge-pending" th:text="${a.status}"></span></td>
+          <td style="font-size:12px;color:var(--muted);white-space:nowrap;"
+              th:text="${#temporals.format(a.createdAt,'dd MMM yyyy HH:mm')}"></td>
+          <td>
+            <form th:action="'/admin/alert/solve/' + ${a.id}" method="post" style="display:inline;">
+              <button type="submit" class="action-btn btn-solve">✔ Mark Solved</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Filters -->
+  <h2 class="section-title">📋 Complaint Records</h2>
+  <form class="filters" action="/admin/dashboard" method="get">
+    <div class="filter-group">
+      <label>Filter by Bus</label>
+      <select name="filterBus">
+        <option value="">All Buses</option>
+        <option value="BUS001" th:selected="${filterBus=='BUS001'}">BUS001</option>
+        <option value="BUS002" th:selected="${filterBus=='BUS002'}">BUS002</option>
+        <option value="BUS003" th:selected="${filterBus=='BUS003'}">BUS003</option>
+        <option value="BUS004" th:selected="${filterBus=='BUS004'}">BUS004</option>
+        <option value="BUS005" th:selected="${filterBus=='BUS005'}">BUS005</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Filter by Status</label>
+      <select name="filterStatus">
+        <option value="">All Status</option>
+        <option value="Pending"  th:selected="${filterStatus=='Pending'}">Pending</option>
+        <option value="Resolved" th:selected="${filterStatus=='Resolved'}">Resolved</option>
+      </select>
+    </div>
+    <button type="submit" class="filter-btn">Apply</button>
+    <a class="reset-link" href="/admin/dashboard">Reset</a>
+  </form>
+
+  <!-- Feedback / Complaint Table -->
+  <div class="table-section">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Complaint ID</th><th>Bus</th><th>Route</th><th>Rating</th><th>Issues</th><th>Areas</th><th>Complaint</th><th>Status</th><th>Date</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          <tr th:if="${#lists.isEmpty(feedbackList)}">
+            <td colspan="10" class="no-data">No records found.</td>
+          </tr>
+          <tr th:each="f : ${feedbackList}">
+            <td><span class="cmp-id" th:text="${f.complaintId}">—</span></td>
+            <td><strong th:text="${f.busId}"></strong></td>
+            <td style="font-size:13px;max-width:120px;" th:text="${f.route}"></td>
+            <td>
+              <span th:if="${f.rating > 0}" th:class="'stars-cell r' + ${f.rating}"
+                    th:text="${'★'.repeat(f.rating) + '☆'.repeat(5 - f.rating)}"></span>
+              <span th:if="${f.rating == 0}" style="color:var(--muted);font-size:12px;">—</span>
+              <div style="font-size:11px;color:var(--muted);" th:if="${f.rating > 0}"
+                   th:text="${f.rating} + '/5'"></div>
+            </td>
+            <td>
+              <div class="tags">
+                <span class="tag tag-yes" th:if="${f.vomit}">🤢 Vomit</span>
+                <span class="tag tag-yes" th:if="${f.badSmell}">💨 Smell</span>
+                <span class="tag tag-yes" th:if="${f.muddyFloor}">🚶 Floor</span>
+                <span class="tag tag-yes" th:if="${f.dirtySeats}">💺 Seats</span>
+                <span th:if="${!f.vomit and !f.badSmell and !f.muddyFloor and !f.dirtySeats}"
+                      style="font-size:12px;color:var(--muted);">None</span>
+              </div>
+            </td>
+            <td>
+              <div class="tags" th:if="${f.cleaningAreas != null and !f.cleaningAreas.isEmpty()}">
+                <span class="tag" th:each="a : ${f.cleaningAreas.split(',')}" th:text="${a.trim()}"></span>
+              </div>
+              <span th:if="${f.cleaningAreas == null or f.cleaningAreas.isEmpty()}"
+                    style="color:var(--muted);font-size:12px;">—</span>
+            </td>
+            <td class="complaint-cell"
+                th:text="${f.complaint != null and !f.complaint.isEmpty()} ? ${f.complaint} : '—'"></td>
+            <td>
+              <span th:class="${f.status == 'Resolved'} ? 'badge badge-resolved' : 'badge badge-pending'"
+                    th:text="${f.status}"></span>
+            </td>
+            <td style="font-size:12px;color:var(--muted);white-space:nowrap;"
+                th:text="${#temporals.format(f.submittedAt,'dd MMM yy HH:mm')}"></td>
+            <td style="white-space:nowrap;">
+              <form th:action="'/admin/toggle/' + ${f.id}" method="post" style="display:inline;">
+                <input type="hidden" name="filterBus"    th:value="${filterBus}"/>
+                <input type="hidden" name="filterStatus" th:value="${filterStatus}"/>
+                <button type="submit"
+                        th:class="${f.status == 'Resolved'} ? 'action-btn btn-reopen' : 'action-btn btn-resolve'"
+                        th:text="${f.status == 'Resolved'} ? 'Reopen' : 'Resolve'"></button>
+              </form>
+              <form th:action="'/admin/delete/' + ${f.id}" method="post" style="display:inline;"
+                    onsubmit="return confirm('Delete this complaint?')">
+                <input type="hidden" name="filterBus"    th:value="${filterBus}"/>
+                <input type="hidden" name="filterStatus" th:value="${filterStatus}"/>
+                <button type="submit" class="action-btn btn-delete">Delete</button>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<footer>&copy; 2025 Smart Bus Hygiene Monitoring System &nbsp;|&nbsp; Department of Computer Science &nbsp;|&nbsp; All Rights Reserved</footer>
+
+<script th:inline="javascript">
+  const solved  = /*[[${solvedAlerts}]]*/ 0;
+  const pending = /*[[${pendingAlerts}]]*/ 0;
+  const clean   = /*[[${cleanBuses}]]*/ 0;
+  const unclean = /*[[${uncleanBuses}]]*/ 0;
+
+  new Chart(document.getElementById('caseChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Solved Cases', 'Active / Pending'],
+      datasets: [{ data: [solved, pending],
+        backgroundColor: ['#4ade80','#facc15'],
+        borderColor: ['#16a34a','#ca8a04'], borderWidth: 2 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 12 } } } } }
+  });
+
+  new Chart(document.getElementById('busChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Clean Buses', 'Unclean Buses'],
+      datasets: [{ label: 'Buses', data: [clean, unclean],
+        backgroundColor: ['#86efac','#fca5a5'],
+        borderColor: ['#16a34a','#dc2626'], borderWidth: 2, borderRadius: 0 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+  });
+</script>
+</body>
+</html>

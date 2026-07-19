@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart Bus Hygiene – Home</title>
+  <link rel="stylesheet" href="/css/nav.css"/>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: #faf8ff; color: #2d1b69; }
+
+    .hero {
+      background: linear-gradient(135deg, #5b21b6 0%, #9333ea 60%, #c084fc 100%);
+      min-height: 320px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 56px 24px 72px;
+      position: relative;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -60px; right: -60px;
+      width: 220px; height: 220px;
+      background: rgba(255,255,255,0.06); border-radius: 50%;
+      z-index: 0; pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 32px; background: #faf8ff; border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+      transform: translateY(60%); z-index: 1;
+    }
+    .header-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.18); color: #fff;
+      font-size: 12px; font-weight: 500; padding: 5px 14px;
+      border-radius: 20px; border: 1px solid rgba(255,255,255,0.3);
+      margin-bottom: 16px; letter-spacing: 0.4px;
+    }
+    .hero-icon { font-size: 60px; margin-bottom: 16px; }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 34px; color: #fff;
+      line-height: 1.2; max-width: 420px;
+    }
+    .hero p { color: rgba(255,255,255,0.82); font-size: 15px; margin-top: 12px; max-width: 340px; line-height: 1.65; }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px; padding: 32px 20px 60px;
+      max-width: 960px; margin: 0 auto;
+    }
+    .card {
+      background: #fff; border: 1px solid #e0d5f5;
+      border-radius: 18px; padding: 26px;
+      text-decoration: none; color: #2d1b69;
+      display: block;
+      transition: box-shadow 0.2s, transform 0.2s;
+      box-shadow: 0 2px 14px rgba(109,40,217,0.07);
+    }
+    .card:hover { box-shadow: 0 8px 28px rgba(109,40,217,0.16); transform: translateY(-3px); }
+    .card .icon { font-size: 38px; margin-bottom: 14px; }
+    .card h2 { font-family: 'Playfair Display', serif; font-size: 18px; margin-bottom: 7px; }
+    .card p { font-size: 14px; color: #7c6fa0; line-height: 1.55; }
+
+    footer {
+      text-align: center; padding: 22px 20px;
+      font-size: 13px; color: #7c6fa0;
+      border-top: 1px solid #e0d5f5;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="/index.html" class="active">🏠 Home</a>
+  <a href="/about.html">About</a>
+  <a href="/contact.html">Contact</a>
+  <a href="/select-bus.html">Feedback</a>
+</nav>
+
+<div class="hero">
+  <div class="header-badge">🏫 College Mini Project</div>
+  <div class="hero-icon">🚌</div>
+  <h1>Smart Bus Hygiene Monitoring</h1>
+  <p>Real passenger feedback that helps transit teams maintain clean, hygienic buses every day.</p>
+</div>
+
+<div class="cards">
+  <a class="card" href="/select-bus.html">
+    <div class="icon">📝</div>
+    <h2>Submit Feedback</h2>
+    <p>Rate your journey, report hygiene issues like bad smell, muddy floors, and dirty seats.</p>
+  </a>
+  <a class="card" href="/qr-codes.html">
+    <div class="icon">📲</div>
+    <h2>QR Codes</h2>
+    <p>Download unique QR codes for each bus to print and paste inside the vehicle.</p>
+  </a>
+  <a class="card" href="/admin/login">
+    <div class="icon">🛠️</div>
+    <h2>Admin Dashboard</h2>
+    <p>Login to view complaints, alerts, and manage bus hygiene status.</p>
+  </a>
+  <a class="card" href="/about.html">
+    <div class="icon">ℹ️</div>
+    <h2>About Us</h2>
+    <p>Learn about the mission behind this hygiene feedback platform.</p>
+  </a>
+</div>
+
+<footer>
+  &copy; 2025 Smart Bus Hygiene Monitoring System &nbsp;|&nbsp;
+  Department of Computer Science &nbsp;|&nbsp; All Rights Reserved
+</footer>
+
+</body>
+</html>

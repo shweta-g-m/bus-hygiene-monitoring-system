@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login – Smart Bus Hygiene</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #5b21b6; --accent: #a855f7; --bg: #f5f0ff;
+      --card: #fff; --border: #e0d5f5; --text: #2d1b69; --muted: #7c6fa0;
+      --error: #dc2626;
+    }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(135deg, #5b21b6 0%, #9333ea 60%, #c084fc 100%);
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 24px;
+    }
+
+    .login-box {
+      background: #fff;
+      border-radius: 24px;
+      padding: 40px 36px;
+      width: 100%; max-width: 420px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+
+    .logo-area {
+      text-align: center; margin-bottom: 28px;
+    }
+    .logo-icon { font-size: 50px; display: block; margin-bottom: 8px; }
+    .logo-area h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px; color: var(--primary);
+    }
+    .logo-area p { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+    .error-box {
+      background: #fef2f2; border: 1px solid #fca5a5;
+      border-radius: 10px; padding: 10px 14px;
+      color: var(--error); font-size: 13px;
+      margin-bottom: 18px;
+      display: none;
+    }
+    .error-box.show { display: block; }
+
+    .field { margin-bottom: 18px; }
+    .field label {
+      display: block; font-size: 11px; font-weight: 600;
+      color: var(--muted); text-transform: uppercase;
+      letter-spacing: 0.6px; margin-bottom: 6px;
+    }
+    .field input {
+      width: 100%; border: 1.5px solid var(--border);
+      border-radius: 10px; padding: 12px 14px;
+      font-family: 'DM Sans', sans-serif; font-size: 15px;
+      color: var(--text); background: #f5f0ff;
+      outline: none; transition: border-color 0.2s, background 0.2s;
+    }
+    .field input:focus { border-color: var(--accent); background: #fff; }
+
+    .login-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #6d28d9, #a855f7);
+      color: #fff; border: none; border-radius: 12px;
+      padding: 14px; font-family: 'Playfair Display', serif;
+      font-size: 17px; font-weight: 600; cursor: pointer;
+      transition: opacity 0.2s;
+      margin-top: 6px;
+    }
+    .login-btn:hover { opacity: 0.88; }
+
+    .back-link {
+      display: block; text-align: center; margin-top: 20px;
+      font-size: 13px; color: var(--muted); text-decoration: none;
+    }
+    .back-link:hover { color: var(--primary); }
+
+    .college-footer {
+      text-align: center; margin-top: 24px;
+      font-size: 12px; color: rgba(255,255,255,0.7);
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-box">
+  <div class="logo-area">
+    <span class="logo-icon">🚌</span>
+    <h1>Smart Bus Hygiene</h1>
+    <p>Admin Login Portal</p>
+  </div>
+
+  <div class="error-box" th:classappend="${error != null ? ' show' : ''}" th:if="${error != null}"
+       th:text="${error}"></div>
+
+  <form action="/admin/login" method="post">
+    <div class="field">
+      <label>Email Address</label>
+      <input type="email" name="email" placeholder="admin@busfeedback.in" required autocomplete="email"/>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" name="password" placeholder="••••••••" required autocomplete="current-password"/>
+    </div>
+    <button type="submit" class="login-btn">Login to Dashboard ✦</button>
+  </form>
+
+  <a class="back-link" href="/index.html">← Back to Home</a>
+</div>
+
+<div class="college-footer">
+  &copy; 2025 Smart Bus Hygiene Monitoring System
+</div>
+
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About – Smart Bus Hygiene</title>
+  <link rel="stylesheet" href="/css/nav.css"/>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@400;500&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family:'DM Sans',sans-serif; background:#faf8ff; color:#2d1b69; }
+    .page-header { background:linear-gradient(135deg,#5b21b6,#9333ea); padding:48px 24px 60px; text-align:center; position:relative; }
+    .page-header::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:40px; background:#faf8ff; border-radius:50px 50px 0 0; }
+    .page-header h1 { font-family:'Playfair Display',serif; font-size:28px; color:#fff; }
+    .page-header p  { color:rgba(255,255,255,0.8); font-size:15px; margin-top:8px; }
+    .content { max-width:680px; margin:0 auto; padding:36px 20px 60px; }
+    .section { margin-bottom:36px; }
+    .section h2 { font-family:'Playfair Display',serif; font-size:22px; margin-bottom:12px; color:#4c1d95; }
+    .section p  { font-size:15px; color:#5b4785; line-height:1.75; margin-bottom:10px; }
+    .values { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:14px; margin-top:16px; }
+    .val-card { background:#fff; border:1px solid #e0d5f5; border-radius:14px; padding:18px; text-align:center; box-shadow:0 2px 12px rgba(109,40,217,0.06); }
+    .val-card .ico { font-size:30px; margin-bottom:8px; }
+    .val-card h3 { font-size:15px; font-weight:600; margin-bottom:4px; }
+    .val-card p  { font-size:13px; color:#7c6fa0; line-height:1.5; }
+    .cta { background:linear-gradient(135deg,#6d28d9,#a855f7); border-radius:16px; padding:28px; text-align:center; color:#fff; margin-top:32px; }
+    .cta h2 { font-family:'Playfair Display',serif; font-size:22px; margin-bottom:8px; }
+    .cta p  { opacity:0.85; font-size:14px; margin-bottom:18px; }
+    .cta a  { display:inline-block; background:#fff; color:#6d28d9; text-decoration:none; padding:11px 28px; border-radius:10px; font-weight:600; font-size:15px; }
+    footer { text-align:center; padding:22px 20px; font-size:13px; color:#7c6fa0; border-top:1px solid #e0d5f5; }
+  </style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="/index.html">🏠 Home</a>
+  <a href="/about.html" class="active">About</a>
+  <a href="/contact.html">Contact</a>
+  <a href="/select-bus.html">Feedback</a>
+</nav>
+<div class="page-header">
+  <h1>About Smart Bus Hygiene</h1>
+  <p>Our mission, our values, and how we work.</p>
+</div>
+<div class="content">
+  <div class="section">
+    <h2>What We Do</h2>
+    <p>Smart Bus Hygiene Monitoring is a real-time passenger feedback platform for public transit systems. Passengers scan a QR code inside the bus to rate cleanliness, flag hygiene issues like bad smells, muddy floors, dirty seats, or vomit — all in under 60 seconds.</p>
+    <p>Every submission is processed through simple alert logic. The system generates alerts automatically and marks buses as unclean when issues are reported. Admin staff can view, filter, and resolve all issues through the dashboard — closing the loop between passengers and operations.</p>
+  </div>
+  <div class="section">
+    <h2>Our Values</h2>
+    <div class="values">
+      <div class="val-card"><div class="ico">🎯</div><h3>Precision</h3><p>Each QR code is tied to a specific bus — no wrong-bus submissions.</p></div>
+      <div class="val-card"><div class="ico">⚡</div><h3>Speed</h3><p>Feedback in under 60 seconds. Alerts visible instantly in the dashboard.</p></div>
+      <div class="val-card"><div class="ico">🔒</div><h3>Trust</h3><p>Anonymous feedback, honest data, real hygiene improvements.</p></div>
+      <div class="val-card"><div class="ico">♿</div><h3>Accessibility</h3><p>Works on any phone — no app download required.</p></div>
+    </div>
+  </div>
+  <div class="cta">
+    <h2>Want to Improve Your Fleet?</h2>
+    <p>Start collecting passenger feedback today.</p>
+    <a href="/contact.html">Get in Touch</a>
+  </div>
+</div>
+<footer>
+  &copy; 2025 Smart Bus Hygiene Monitoring System &nbsp;|&nbsp;
+  Department of Computer Science &nbsp;|&nbsp; All Rights Reserved
+</footer>
+</body>
+</html>

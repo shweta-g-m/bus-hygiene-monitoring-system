@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bus Feedback – Smart Bus Hygiene</title>
+  <link rel="stylesheet" href="/css/nav.css"/>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap');
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --blue:#1565c0;--mid:#1e88e5;--light:#e3f2fd;--border:#bbdefb;
+      --bg:#f0f6ff;--text:#0c2d5e;--muted:#1976d2;--error:#dc2626;
+    }
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:60px;}
+
+    .hero{background:linear-gradient(135deg,var(--blue),var(--mid));padding:32px 20px 48px;text-align:center;position:relative;}
+    .hero-icon{font-size:46px;display:block;margin-bottom:10px;}
+    .hero h1{font-family:'Playfair Display',serif;font-size:25px;color:#fff;font-weight:700;}
+    .hero p{color:rgba(255,255,255,0.85);font-size:14px;margin-top:6px;}
+    .bus-badge{display:inline-block;background:rgba(255,255,255,0.2);color:#fff;font-size:12px;font-weight:600;padding:4px 14px;border:1px solid rgba(255,255,255,0.4);margin-top:10px;letter-spacing:0.4px;}
+
+    /* Guard – shown when no valid busId */
+    .guard-box{display:none;background:#fff;border:2px solid var(--border);margin:32px auto;max-width:440px;padding:36px 28px;text-align:center;}
+    .guard-box.show{display:block;}
+    .guard-box .g-icon{font-size:52px;margin-bottom:14px;display:block;}
+    .guard-box h2{font-family:'Playfair Display',serif;font-size:20px;color:var(--blue);margin-bottom:10px;}
+    .guard-box p{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:20px;}
+    .guard-btn{display:inline-block;background:linear-gradient(135deg,var(--blue),var(--mid));color:#fff;text-decoration:none;padding:12px 28px;font-size:15px;font-weight:600;}
+
+    .form-wrap{max-width:500px;margin:0 auto;padding:20px 16px;}
+
+    .card{background:#fff;border:2px solid var(--border);padding:20px;margin-bottom:14px;box-shadow:0 2px 10px rgba(21,101,192,0.06);}
+    .card-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:600;color:var(--blue);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+
+    .field{margin-bottom:14px;}
+    .field:last-child{margin-bottom:0;}
+    .field label{display:block;font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px;}
+    input[type="text"],select,textarea{width:100%;border:2px solid var(--border);padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text);background:var(--light);outline:none;-webkit-appearance:none;}
+    input:focus,select:focus,textarea:focus{border-color:var(--blue);background:#fff;}
+    select.err,input.err{border-color:var(--error);}
+    .err-msg{color:var(--error);font-size:12px;margin-top:4px;display:none;}
+    .err-msg.show{display:block;}
+    textarea{resize:vertical;min-height:96px;line-height:1.5;}
+
+    /* Stars */
+    .stars{display:flex;flex-direction:row-reverse;justify-content:center;gap:6px;padding:4px 0;}
+    .stars input{display:none;}
+    .stars label{font-size:40px;color:#bbdefb;cursor:pointer;transition:color 0.15s;line-height:1;}
+    .stars input:checked ~ label,.stars label:hover,.stars label:hover ~ label{color:#1e88e5;}
+    .stars input:checked + label{transform:scale(1.12);}
+    .rating-hint{text-align:center;font-size:13px;color:var(--muted);margin-top:8px;min-height:18px;}
+
+    /* Yes/No */
+    .yn-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .yn-item{display:flex;flex-direction:column;gap:6px;}
+    .yn-label{font-size:13px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;}
+    .yn-buttons{display:flex;gap:8px;}
+    .yn-btn{flex:1;padding:9px 0;border:2px solid var(--border);background:var(--light);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;text-align:center;}
+    .yn-btn.selected-yes{background:#fee2e2;border-color:#dc2626;color:#b91c1c;}
+    .yn-btn.selected-no{background:#dcfce7;border-color:#16a34a;color:#166534;}
+    .yn-btn:hover:not(.selected-yes):not(.selected-no){border-color:var(--blue);background:#dbeafe;color:var(--blue);}
+
+    /* Cleaning areas */
+    .clean-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .clean-item{display:flex;align-items:center;gap:10px;background:var(--light);border:2px solid var(--border);padding:10px 12px;cursor:pointer;transition:border-color 0.2s,background 0.2s;}
+    .clean-item input{display:none;}
+    .chk{width:20px;height:20px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;transition:all 0.2s;background:#fff;}
+    .clean-item:has(input:checked){border-color:var(--blue);background:#dbeafe;}
+    .clean-item:has(input:checked) .chk{background:var(--blue);border-color:var(--blue);color:#fff;}
+    .clean-label{font-size:14px;font-weight:500;}
+    .clean-icon{font-size:18px;}
+
+    /* Submit */
+    .submit-btn{width:100%;background:linear-gradient(135deg,var(--blue),var(--mid));color:#fff;border:none;padding:16px;font-family:'Playfair Display',serif;font-size:17px;font-weight:600;cursor:pointer;margin-top:6px;transition:opacity 0.2s;}
+    .submit-btn:hover{opacity:0.9;}
+    .submit-btn:disabled{opacity:0.6;cursor:not-allowed;}
+    .note{text-align:center;font-size:12px;color:var(--muted);margin-bottom:14px;}
+    .error-banner{background:#fef2f2;border:2px solid #fca5a5;color:#b91c1c;padding:10px 14px;font-size:13px;margin-bottom:14px;display:none;}
+    .error-banner.show{display:block;}
+
+    /* Success */
+    .success-overlay{display:none;background:#f0fdf4;border:2px solid #86efac;padding:28px 24px;text-align:center;margin-bottom:14px;}
+    .success-overlay.show{display:block;}
+    .success-overlay .s-icon{font-size:48px;margin-bottom:10px;display:block;}
+    .success-overlay h3{font-family:'Playfair Display',serif;font-size:20px;color:#166534;margin-bottom:6px;}
+    .success-overlay p{font-size:14px;color:#166534;margin-bottom:8px;}
+    .cmp-pill{display:inline-block;background:#dcfce7;border:1px solid #86efac;color:#166534;font-family:monospace;font-size:14px;font-weight:700;padding:6px 16px;letter-spacing:1px;margin-bottom:16px;}
+    .success-overlay a{display:inline-block;background:linear-gradient(135deg,var(--blue),var(--mid));color:#fff;text-decoration:none;padding:10px 24px;font-size:14px;font-weight:600;}
+
+    footer{text-align:center;padding:20px;font-size:12px;color:var(--muted);border-top:2px solid var(--border);margin-top:20px;}
+  </style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="/index.html">🏠 Home</a>
+  <a href="/about.html">About</a>
+  <a href="/contact.html">Contact</a>
+  <a href="/select-bus.html" class="active">Feedback</a>
+</nav>
+
+<div class="hero">
+  <span class="hero-icon">🚌</span>
+  <h1>Share Your Journey</h1>
+  <p>Your feedback makes every ride better</p>
+  <span class="bus-badge" id="busBadge">Loading…</span>
+</div>
+
+<!-- Guard block: shown when busId is missing or invalid -->
+<div class="guard-box" id="guardBox">
+  <span class="g-icon">🔍</span>
+  <h2>Bus ID Not Found</h2>
+  <p>Please <strong>scan the QR code inside your bus</strong> or select your bus manually to open the feedback form.</p>
+  <a class="guard-btn" href="/select-bus.html">← Select Your Bus</a>
+</div>
+
+<div class="form-wrap" id="formWrap" style="display:none;">
+  <div class="error-banner" id="errorBanner">⚠️ Something went wrong. Please try again.</div>
+
+  <div class="success-overlay" id="successOverlay">
+    <span class="s-icon">✅</span>
+    <h3>Feedback Submitted!</h3>
+    <p>Your Complaint ID is:</p>
+    <div class="cmp-pill" id="cmpIdDisplay"></div>
+    <p style="margin-bottom:16px;">Save this ID for future reference. Our team will act on it promptly.</p>
+    <a href="javascript:void(0)" onclick="resetForm()">Submit Another Feedback</a>
+  </div>
+
+  <form id="feedbackForm" novalidate>
+
+    <div class="card">
+      <div class="card-title">🪪 Journey Details</div>
+      <div class="field">
+        <label>Bus ID</label>
+        <input type="text" id="displayBusId" readonly style="background:#dbeafe;color:var(--blue);font-weight:600;cursor:not-allowed;"/>
+      </div>
+      <div class="field">
+        <label>Route *</label>
+        <select id="route">
+          <option value="">— Select Route —</option>
+          <option>Route 1 - City Center to Airport</option>
+          <option>Route 2 - Central to Tech Park</option>
+          <option>Route 3 - North to South Station</option>
+          <option>Route 4 - Market to University</option>
+          <option>Route 5 - East to West Terminal</option>
+          <option>Other</option>
+        </select>
+        <div class="err-msg" id="routeErr">Please select a route.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⭐ Overall Cleanliness Rating (1–5)</div>
+      <div class="stars">
+        <input type="radio" id="s5" name="rating" value="5"/><label for="s5">★</label>
+        <input type="radio" id="s4" name="rating" value="4"/><label for="s4">★</label>
+        <input type="radio" id="s3" name="rating" value="3"/><label for="s3">★</label>
+        <input type="radio" id="s2" name="rating" value="2"/><label for="s2">★</label>
+        <input type="radio" id="s1" name="rating" value="1"/><label for="s1">★</label>
+      </div>
+      <div class="rating-hint" id="ratingHint">Tap a star to rate</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⚠️ Hygiene Issues</div>
+      <div class="yn-grid">
+        <div class="yn-item">
+          <div class="yn-label">💨 Bad Smell?</div>
+          <div class="yn-buttons">
+            <button type="button" class="yn-btn" id="badSmellYes" onclick="setYN('badSmell','yes')">Yes</button>
+            <button type="button" class="yn-btn" id="badSmellNo"  onclick="setYN('badSmell','no')">No</button>
+          </div>
+          <input type="hidden" id="badSmell" value="false"/>
+        </div>
+        <div class="yn-item">
+          <div class="yn-label">🚶 Muddy Floor?</div>
+          <div class="yn-buttons">
+            <button type="button" class="yn-btn" id="muddyFloorYes" onclick="setYN('muddyFloor','yes')">Yes</button>
+            <button type="button" class="yn-btn" id="muddyFloorNo"  onclick="setYN('muddyFloor','no')">No</button>
+          </div>
+          <input type="hidden" id="muddyFloor" value="false"/>
+        </div>
+        <div class="yn-item">
+          <div class="yn-label">💺 Dirty Seats?</div>
+          <div class="yn-buttons">
+            <button type="button" class="yn-btn" id="dirtySeatsYes" onclick="setYN('dirtySeats','yes')">Yes</button>
+            <button type="button" class="yn-btn" id="dirtySeatsNo"  onclick="setYN('dirtySeats','no')">No</button>
+          </div>
+          <input type="hidden" id="dirtySeats" value="false"/>
+        </div>
+        <div class="yn-item">
+          <div class="yn-label">🤢 Vomit Present?</div>
+          <div class="yn-buttons">
+            <button type="button" class="yn-btn" id="vomitYes" onclick="setYN('vomit','yes')">Yes</button>
+            <button type="button" class="yn-btn" id="vomitNo"  onclick="setYN('vomit','no')">No</button>
+          </div>
+          <input type="hidden" id="vomit" value="false"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🧹 What Needs Cleaning?</div>
+      <div class="clean-grid">
+        <label class="clean-item"><input type="checkbox" name="cleaning" value="Seats"/>    <span class="chk">✓</span><span class="clean-icon">💺</span><span class="clean-label">Seats</span></label>
+        <label class="clean-item"><input type="checkbox" name="cleaning" value="Floor"/>    <span class="chk">✓</span><span class="clean-icon">🚶</span><span class="clean-label">Floor</span></label>
+        <label class="clean-item"><input type="checkbox" name="cleaning" value="Windows"/>  <span class="chk">✓</span><span class="clean-icon">🪟</span><span class="clean-label">Windows</span></label>
+        <label class="clean-item"><input type="checkbox" name="cleaning" value="Handrails"/><span class="chk">✓</span><span class="clean-icon">🤝</span><span class="clean-label">Handrails</span></label>
+        <label class="clean-item"><input type="checkbox" name="cleaning" value="Overall"/>  <span class="chk">✓</span><span class="clean-icon">✨</span><span class="clean-label">Overall</span></label>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📝 Complaint / Suggestion</div>
+      <textarea id="complaint" placeholder="Describe your issue or suggestion…"></textarea>
+    </div>
+
+    <p class="note">* Route is required. All other fields are optional.</p>
+    <button type="submit" class="submit-btn" id="submitBtn">Submit Feedback ✦</button>
+  </form>
+</div>
+
+<footer>&copy; 2025 Smart Bus Hygiene Monitoring System &nbsp;|&nbsp; Department of Computer Science &nbsp;|&nbsp; All Rights Reserved</footer>
+
+<script>
+  const VALID_BUSES = ['BUS001','BUS002','BUS003','BUS004','BUS005'];
+  const params = new URLSearchParams(window.location.search);
+  const busId  = (params.get('busId') || '').trim().toUpperCase();
+
+  // Guard: block if busId is missing or invalid
+  if (!busId || !VALID_BUSES.includes(busId)) {
+    document.getElementById('guardBox').classList.add('show');
+  } else {
+    document.getElementById('formWrap').style.display = '';
+    document.getElementById('displayBusId').value      = busId;
+    document.getElementById('busBadge').textContent    = 'Bus: ' + busId;
+  }
+
+  // Star rating hints
+  const ratingLabels = ['','Terrible 😞','Poor 😕','Average 😐','Good 😊','Excellent 😄'];
+  document.querySelectorAll('.stars input').forEach(r => {
+    r.addEventListener('change', () => {
+      document.getElementById('ratingHint').textContent = ratingLabels[r.value];
+    });
+  });
+
+  function setYN(field, value) {
+    const isYes = value === 'yes';
+    document.getElementById(field).value                = isYes ? 'true' : 'false';
+    document.getElementById(field + 'Yes').className   = 'yn-btn' + (isYes ? ' selected-yes' : '');
+    document.getElementById(field + 'No').className    = 'yn-btn' + (!isYes ? ' selected-no' : '');
+  }
+
+  document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const route    = document.getElementById('route');
+    const routeErr = document.getElementById('routeErr');
+    route.classList.remove('err'); routeErr.classList.remove('show');
+    if (!route.value) { route.classList.add('err'); routeErr.classList.add('show'); return; }
+
+    const ratingInput = document.querySelector('.stars input:checked');
+    const cleaning    = Array.from(document.querySelectorAll('input[name="cleaning"]:checked'))
+                             .map(c => c.value).join(',');
+    const payload = {
+      busId:         busId,
+      route:         route.value,
+      rating:        ratingInput ? ratingInput.value : '0',
+      badSmell:      document.getElementById('badSmell').value,
+      muddyFloor:    document.getElementById('muddyFloor').value,
+      dirtySeats:    document.getElementById('dirtySeats').value,
+      vomit:         document.getElementById('vomit').value,
+      cleaningAreas: cleaning,
+      complaint:     document.getElementById('complaint').value.trim()
+    };
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true; btn.textContent = 'Submitting…';
+
+    try {
+      const res  = await fetch('/api/feedback', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        document.getElementById('cmpIdDisplay').textContent    = data.complaintId || '—';
+        document.getElementById('feedbackForm').style.display  = 'none';
+        document.getElementById('successOverlay').classList.add('show');
+        document.getElementById('errorBanner').classList.remove('show');
+      } else {
+        document.getElementById('errorBanner').textContent = '⚠️ ' + (data.error || 'Something went wrong.');
+        document.getElementById('errorBanner').classList.add('show');
+        btn.disabled = false; btn.textContent = 'Submit Feedback ✦';
+      }
+    } catch (err) {
+      document.getElementById('errorBanner').classList.add('show');
+      btn.disabled = false; btn.textContent = 'Submit Feedback ✦';
+    }
+  });
+
+  function resetForm() {
+    document.getElementById('feedbackForm').style.display = '';
+    document.getElementById('successOverlay').classList.remove('show');
+    document.getElementById('feedbackForm').reset();
+    document.getElementById('ratingHint').textContent = 'Tap a star to rate';
+    ['badSmell','muddyFloor','dirtySeats','vomit'].forEach(f => {
+      document.getElementById(f).value             = 'false';
+      document.getElementById(f + 'Yes').className = 'yn-btn';
+      document.getElementById(f + 'No').className  = 'yn-btn';
+    });
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = false; btn.textContent = 'Submit Feedback ✦';
+  }
+</script>
+</body>
+</html>

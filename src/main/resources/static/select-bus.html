@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Select Your Bus – Smart Bus Hygiene</title>
+  <link rel="stylesheet" href="/css/nav.css"/>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500&display=swap');
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--blue:#1565c0;--mid:#1e88e5;--light:#e3f2fd;--border:#bbdefb;--bg:#f0f6ff;--text:#0c2d5e;--muted:#1976d2;}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+    .hero{background:linear-gradient(135deg,var(--blue),var(--mid));padding:40px 20px 48px;text-align:center;}
+    .hero-icon{font-size:48px;display:block;margin-bottom:10px;}
+    .hero h1{font-family:'Playfair Display',serif;font-size:26px;color:#fff;}
+    .hero p{color:rgba(255,255,255,0.85);font-size:14px;margin-top:6px;}
+
+    .wrap{max-width:440px;margin:0 auto;padding:32px 16px 60px;}
+
+    .info-box{background:#fff;border:2px solid var(--border);padding:18px 20px;margin-bottom:20px;display:flex;gap:14px;align-items:flex-start;}
+    .info-box .ico{font-size:28px;flex-shrink:0;}
+    .info-box h3{font-size:14px;font-weight:600;color:var(--blue);margin-bottom:4px;}
+    .info-box p{font-size:13px;color:var(--muted);line-height:1.55;}
+
+    .card{background:#fff;border:2px solid var(--border);padding:24px;margin-bottom:16px;box-shadow:0 2px 10px rgba(21,101,192,0.06);}
+    .card-title{font-family:'Playfair Display',serif;font-size:16px;color:var(--blue);margin-bottom:16px;}
+    .field label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px;}
+    select{width:100%;border:2px solid var(--border);padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text);background:var(--light);outline:none;-webkit-appearance:none;appearance:none;}
+    select:focus{border-color:var(--blue);background:#fff;}
+    .err-msg{color:#dc2626;font-size:12px;margin-top:5px;display:none;}
+    .err-msg.show{display:block;}
+
+    .go-btn{width:100%;background:linear-gradient(135deg,var(--blue),var(--mid));color:#fff;border:none;padding:15px;font-family:'Playfair Display',serif;font-size:17px;font-weight:600;cursor:pointer;margin-top:6px;transition:opacity 0.2s;}
+    .go-btn:hover{opacity:0.88;}
+
+    .divider{text-align:center;font-size:13px;color:var(--muted);margin:20px 0;position:relative;}
+    .divider::before,.divider::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:var(--border);}
+    .divider::before{left:0;} .divider::after{right:0;}
+
+    footer{text-align:center;padding:22px;font-size:13px;color:var(--muted);border-top:2px solid var(--border);}
+  </style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="/index.html">🏠 Home</a>
+  <a href="/about.html">About</a>
+  <a href="/contact.html">Contact</a>
+  <a href="/select-bus.html" class="active">Feedback</a>
+</nav>
+
+<div class="hero">
+  <span class="hero-icon">🚌</span>
+  <h1>Which Bus Are You In?</h1>
+  <p>Select your bus to open the hygiene feedback form</p>
+</div>
+
+<div class="wrap">
+
+  <div class="info-box">
+    <span class="ico">📲</span>
+    <div>
+      <h3>Best Way: Scan QR Code</h3>
+      <p>Use your phone camera to scan the QR code sticker inside the bus. The feedback form will open automatically with the correct Bus ID.</p>
+    </div>
+  </div>
+
+  <div class="divider">or select manually</div>
+
+  <div class="card">
+    <div class="card-title">📋 Select Your Bus</div>
+    <div class="field">
+      <label>Bus ID</label>
+      <select id="busSelect">
+        <option value="">— Choose a Bus —</option>
+        <option value="BUS001">BUS001 — Route 1: City Center to Airport</option>
+        <option value="BUS002">BUS002 — Route 2: Central to Tech Park</option>
+        <option value="BUS003">BUS003 — Route 3: North to South Station</option>
+        <option value="BUS004">BUS004 — Route 4: Market to University</option>
+        <option value="BUS005">BUS005 — Route 5: East to West Terminal</option>
+      </select>
+      <div class="err-msg" id="busErr">Please select a bus to continue.</div>
+    </div>
+    <button class="go-btn" onclick="proceed()">Open Feedback Form →</button>
+  </div>
+
+</div>
+
+<footer>&copy; 2025 Smart Bus Hygiene Monitoring System &nbsp;|&nbsp; Department of Computer Science &nbsp;|&nbsp; All Rights Reserved</footer>
+
+<script>
+  function proceed() {
+    const sel = document.getElementById('busSelect');
+    const err = document.getElementById('busErr');
+    err.classList.remove('show');
+    if (!sel.value) { err.classList.add('show'); return; }
+    window.location.href = '/feedback.html?busId=' + sel.value;
+  }
+</script>
+</body>
+</html>

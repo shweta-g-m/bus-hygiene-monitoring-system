@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QR Codes – BusFeedback</title>
+  <link rel="stylesheet" href="/css/nav.css"/>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family:'DM Sans',sans-serif; background:#faf8ff; color:#2d1b69; }
+    .page-header { background:linear-gradient(135deg,#5b21b6,#9333ea); padding:40px 20px 56px; text-align:center; position:relative; }
+    .page-header::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:40px; background:#faf8ff; border-radius:50px 50px 0 0; }
+    .page-header h1 { font-family:'Playfair Display',serif; font-size:26px; color:#fff; }
+    .page-header p  { color:rgba(255,255,255,0.8); font-size:14px; margin-top:8px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:20px; padding:32px 20px; max-width:860px; margin:0 auto; }
+    .qr-card { background:#fff; border:1px solid #e0d5f5; border-radius:18px; padding:28px 20px; text-align:center; box-shadow:0 2px 16px rgba(109,40,217,0.07); }
+    .qr-card img { width:200px; height:200px; border:4px solid #f5f0ff; border-radius:12px; display:block; margin:0 auto 16px; }
+    .bus-name { font-family:'Playfair Display',serif; font-size:18px; margin-bottom:4px; }
+    .bus-id   { font-size:12px; color:#7c6fa0; background:#f5f0ff; padding:3px 10px; border-radius:20px; display:inline-block; margin-bottom:14px; }
+    .dl-btn   { display:inline-block; background:linear-gradient(135deg,#6d28d9,#a855f7); color:#fff; text-decoration:none; padding:9px 22px; border-radius:10px; font-size:14px; font-weight:500; transition:opacity 0.2s; }
+    .dl-btn:hover { opacity:0.87; }
+    .note { text-align:center; font-size:13px; color:#7c6fa0; padding:0 20px 40px; max-width:600px; margin:0 auto; line-height:1.65; }
+    .note strong { color:#2d1b69; }
+  </style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="/index.html">🏠 Home</a>
+  <a href="/about.html">About</a>
+  <a href="/contact.html">Contact</a>
+  <a href="/qr-codes.html" class="active">QR Codes</a>
+  <a href="/admin">Admin</a>
+</nav>
+
+<div class="page-header">
+  <h1>📲 Bus QR Codes</h1>
+  <p>Each bus has its own unique QR code. Print and paste inside the bus.</p>
+</div>
+
+<div class="grid">
+  <div class="qr-card">
+    <img src="/api/qr/BUS001" alt="QR – BUS001"/>
+    <div class="bus-name">Bus One</div>
+    <div class="bus-id">BUS001</div><br/>
+    <a class="dl-btn" href="/api/qr/BUS001" download="QR_BUS001.png">⬇ Download</a>
+  </div>
+  <div class="qr-card">
+    <img src="/api/qr/BUS002" alt="QR – BUS002"/>
+    <div class="bus-name">Bus Two</div>
+    <div class="bus-id">BUS002</div><br/>
+    <a class="dl-btn" href="/api/qr/BUS002" download="QR_BUS002.png">⬇ Download</a>
+  </div>
+  <div class="qr-card">
+    <img src="/api/qr/BUS003" alt="QR – BUS003"/>
+    <div class="bus-name">Bus Three</div>
+    <div class="bus-id">BUS003</div><br/>
+    <a class="dl-btn" href="/api/qr/BUS003" download="QR_BUS003.png">⬇ Download</a>
+  </div>
+</div>
+
+<p class="note">
+  <strong>How it works:</strong> Each QR encodes a unique URL with that bus's ID.
+  When a passenger scans it, the form opens with the Bus ID already filled in —
+  no chance of submitting feedback for the wrong bus.
+</p>
+
+</body>
+</html>
